@@ -2,6 +2,7 @@ package utm
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -117,6 +118,69 @@ func TestProcessOptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := ProcessOptions(tt.options)
 			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func BenchmarkProcessOptions(b *testing.B) {
+	benchmarks := []struct {
+		name    string
+		numOpts int
+	}{
+		{"10 options", 10},
+		{"100 options", 100},
+		{"1000 options", 1000},
+		{"10000 options", 10000},
+	}
+
+	for _, bm := range benchmarks {
+		b.Run(bm.name, func(b *testing.B) {
+			options := make([]Option, bm.numOpts)
+			for i := 0; i < bm.numOpts; i++ {
+				options[i] = String("param"+strconv.Itoa(i), "value"+strconv.Itoa(i), "")
+			}
+
+			b.ResetTimer()
+
+			for i := 0; i < b.N; i++ {
+				_ = ProcessOptions(options)
+			}
+		})
+	}
+}
+
+func BenchmarkProcessOptionsStringArray(b *testing.B) {
+	benchmarks := []struct {
+		name      string
+		numOpts   int
+		arraySize int
+	}{
+		{"10 options, 10 elements", 10, 10},
+		{"100 options, 10 elements", 100, 10},
+		{"1000 options, 10 elements", 1000, 10},
+		{"10000 options, 10 elements", 10000, 10},
+		{"10 options, 100 elements", 10, 100},
+		{"100 options, 100 elements", 100, 100},
+		{"1000 options, 100 elements", 1000, 100},
+		{"10000 options, 100 elements", 10000, 100},
+	}
+
+	for _, bm := range benchmarks {
+		b.Run(bm.name, func(b *testing.B) {
+			options := make([]Option, bm.numOpts)
+			for i := 0; i < bm.numOpts; i++ {
+				values := make([]string, bm.arraySize)
+				for j := 0; j < bm.arraySize; j++ {
+					values[j] = "value" + strconv.Itoa(j)
+				}
+				options[i] = StringArray{Param: "param" + strconv.Itoa(i), Values: values}
+			}
+
+			b.ResetTimer()
+
+			for i := 0; i < b.N; i++ {
+				_ = ProcessOptions(options)
+			}
 		})
 	}
 }
