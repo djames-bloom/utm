@@ -19,7 +19,7 @@ Currently standard types used by the API are supported (`uint`, `int`, `string` 
 Quick and simple, import as a dependency wherever you need to use it
 
 ```go
-import "t25.tokyo/param-serializer"
+import "t25.tokyo/utm"
 ```
 
 ---
@@ -33,12 +33,12 @@ package main
 
 import (
 	"log"
-	"t25.tokyo/utm-serializer"
+	"t25.tokyo/utm"
 )
 
 func main() {
 	// Create options
-	options := []Option{
+	options := []utm.Option{
 		utm.Uint("myUintParam", 42, 0),
 		utm.String("myStringParam", "example", ""),
 		utm.Int("myIntParam", 10, 0),
