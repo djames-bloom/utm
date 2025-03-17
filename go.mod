@@ -1,4 +1,4 @@
-module t25.tokyo/utm
+module code.t25.tokyo/utm
 
 go 1.23.2
 
